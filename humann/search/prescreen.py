@@ -185,9 +185,10 @@ def create_custom_database(chocophlan_dir, profile_file):
             for species in sgb_species_found:
                 # match the exact genus and species from the MetaPhlAn (or custom) list
                 new_database_file=os.path.join(chocophlan_dir,species_file)
-                if re.search(species.lower()+"_", species_file.lower()) and not new_database_file in species_file_list: 
+                if species.lower() + "_" in species_file.lower():
                     species_file_list.append(new_database_file)
-                    logger.debug("Adding file to database: " + species_file)   
+                    logger.debug("Adding file to database: " + species_file)
+                    break
     else:
         for species_file in os.listdir(chocophlan_dir):
             species_file_list.append(os.path.join(chocophlan_dir,species_file))
