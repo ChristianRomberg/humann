@@ -869,8 +869,12 @@ def check_requirements(args):
                         + "see the HUMAnN User Manual.")
 
             # Check that the translated alignment executable can be found
-            if not utilities.find_exe_in_path(config.translated_alignment_selected):
-                sys.exit("CRITICAL ERROR: The " +  config.translated_alignment_selected + 
+            if config.translated_alignment_selected == "diamond_multistage":
+                translated_alignment_executable = "diamond"
+            else:
+                translated_alignment_executable = config.translated_alignment_selected
+            if not utilities.find_exe_in_path(translated_alignment_executable):
+                sys.exit("CRITICAL ERROR: The " +  config.translated_alignment_selected +
                     " executable can not be found. Please check the install.")
 
             # Check for correct usearch version
@@ -882,7 +886,8 @@ def check_requirements(args):
                 utilities.check_software_version("rapsearch", config.rapsearch_version)
                 
             # Check for the correct diamond version
-            if config.translated_alignment_selected == "diamond":
+            if config.translated_alignment_selected == "diamond" or \
+                    config.translated_alignment_selected == "diamond_multistage":
                 utilities.check_software_version("diamond", config.diamond_version)
 
     # parse the chocophlan gene index
