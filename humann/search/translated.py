@@ -154,6 +154,76 @@ def rapsearch_alignment(alignment_file,uniref, unaligned_reads_file_fasta):
         logger.info(message)
         print(message)
 
+def diamond_multistage(alignment_file, uniref, unaligned_reads_file_fasta):
+    """
+    Run diamond alignment on database formatted for diamond
+    """
+
+    bypass = utilities.check_outfiles([alignment_file])
+
+    exe = "diamond"
+
+    # Select the command based on a protein or nucleotide database search
+
+    if config.pick_frames_toggle == "on":
+        args = [config.diamond_cmmd_protein_search]
+    else:
+        args = [config.diamond_cmmd_nucleotide_search]
+
+    opts = config.diamond_opts
+
+    args += ["--evalue", config.evalue_threshold]
+    args += ["--threads", config.threads]
+    args += ["--query-cover", config.translated_query_coverage_threshold]
+    args += ["--id", config.identity_threshold]
+
+    message = "Running " + exe + " ........"
+    logger.info(message)
+    print("\n" + message + "\n")
+
+    current_query_file = unaligned_reads_file_fasta
+
+    if not bypass:
+        with open(alignment_file, "w") as alignment_file_handle:
+            args += opts
+            temp_out_files = []
+            for database in sorted(os.listdir(uniref)):
+                # ignore any files that are not the database files
+                if database.endswith(config.diamond_database_extension):
+                    # Provide the database name without the extension
+                    input_database = os.path.join(uniref, database)
+
+                    message = "Aligning to reference database: " + database
+                    logger.info(message)
+                    print("\n" + message + "\n")
+                    input_database_extension_removed = re.sub(config.diamond_database_extension
+                                                              + "$", "", input_database)
+                    full_args = args + ["--db", input_database_extension_removed]
+
+                    # create temp output file
+                    temp_out_file = utilities.unnamed_temp_file("diamond_m8_")
+                    unaligned_reads_fasta = utilities.unnamed_temp_file("diamond_unal_")
+                    utilities.remove_file(temp_out_file)
+                    utilities.remove_file(unaligned_reads_fasta)
+
+                    temp_out_files.append(temp_out_file)
+
+                    full_args += ["--out", temp_out_file]
+                    full_args += ["--tmpdir", os.path.dirname(temp_out_file)]
+                    full_args += ["--query", current_query_file]
+                    full_args += ["--un", unaligned_reads_fasta]
+
+                    utilities.execute_command(exe, full_args, [input_database], [])
+                    current_query_file = unaligned_reads_fasta
+
+        # merge the temp output files
+        utilities.execute_command("cat", temp_out_files, temp_out_files, [alignment_file],
+                                  alignment_file)
+
+    else:
+        message = "Bypass"
+        logger.info(message)
+        print(message)
 
 def diamond_alignment(alignment_file,uniref, unaligned_reads_file_fasta):
     """
@@ -257,6 +327,8 @@ def alignment(uniref, unaligned_reads_file):
         rapsearch_alignment(alignment_file, uniref, input_fasta)
     elif config.translated_alignment_selected == "diamond":
         diamond_alignment(alignment_file, uniref, input_fasta)
+    elif config.translated_alignment_selected == "diamond_multistage":
+        diamond_multistage(alignment_file, uniref, input_fasta)
     else:
         sys.exit("CRITICAL ERROR: The translated alignment software selected is not"
             + " available: " + config.translated_alignment_selected )

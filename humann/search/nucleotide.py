@@ -210,7 +210,7 @@ def find_md_field(info):
     for i in reversed(range(config.sam_start_optional_index, len(info))):
         if info[i].startswith(config.sam_md_field_identifier):
             return info[i]
-
+    return ""
 
 def unaligned_reads(sam_alignment_file, alignments, unaligned_reads_store, keep_sam=None):
     """

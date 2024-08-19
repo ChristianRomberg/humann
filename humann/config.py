@@ -339,7 +339,7 @@ input_format_choices=["fastq","fastq.gz","fasta","fasta.gz","sam","bam","blastm8
 input_format=""
 
 # translated alignment options
-translated_alignment_choices = ["diamond"]
+translated_alignment_choices = ["diamond_multistage", "diamond"]
 translated_alignment_selected = translated_alignment_choices[0]
 
 # file naming
