@@ -377,7 +377,7 @@ metaphlan_version={
     "line" : -1,
     "column" : 2}
 
-metaphlan_v4_db_version="vOct22"
+metaphlan_v4_db_version="vOct22_CHOCOPhlAnSGB_202403"
 metaphlan_v4_db_matching_uniref="SGB"
 sgb_to_species_mapping={}
 
@@ -495,7 +495,7 @@ rapsearch_version={
 diamond_database_extension=".dmnd"
 diamond_options_custom=False
 diamond_opts_uniref50=["--top","1","--sensitive","--outfmt","6"]
-diamond_opts_uniref90=["--top","1","--outfmt","6"]
+diamond_opts_uniref90=["--top","1","--sensitive","--outfmt","6"]
 diamond_cmmd_protein_search="blastp"
 diamond_cmmd_nucleotide_search="blastx"
 diamond_version={
